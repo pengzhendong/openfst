@@ -29,13 +29,3 @@ ExternalProject_Add(openfst
   COMMAND           make -j 4
 )
 add_dependencies(openfst gflags glog)
-
-add_custom_command(TARGET openfst POST_BUILD
-  COMMAND cp ${glog_SOURCE_DIR}/src/glog/log_severity.h ${glog_BINARY_DIR}/glog
-  COMMAND cp -r ${gflags_BINARY_DIR}/include/gflags ${CMAKE_CURRENT_SOURCE_DIR}/libs/include
-  COMMAND cp -r ${glog_BINARY_DIR}/glog ${CMAKE_CURRENT_SOURCE_DIR}/libs/include
-  COMMAND cp -r ${openfst_SOURCE_DIR}/src/include/fst ${CMAKE_CURRENT_SOURCE_DIR}/libs/include
-  COMMAND cp ${gflags_BINARY_DIR}/libgflags* ${CMAKE_CURRENT_SOURCE_DIR}/libs
-  COMMAND cp ${glog_BINARY_DIR}/libglog* ${CMAKE_CURRENT_SOURCE_DIR}/libs
-  COMMAND cp ${openfst_BINARY_DIR}/lib/libfst* ${CMAKE_CURRENT_SOURCE_DIR}/libs
-)

@@ -1,0 +1,39 @@
+name: OpenFST
+
+on:
+  push:
+    branches: master
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+            matrix:
+                os: [macos-latest, ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Prepare Release
+      run: |
+        mkdir release
+        cp -r build/bin release
+        cp -r build/include release
+        cp -r build/lib release
+        cp -r build/_deps/gflags-build/include/gflags release/include
+        cp -r build/_deps/glog-build/glog release/include
+        cp build/_deps/glog-src/src/glog/log_severity.h release/include/glog
+        cp -r build/include/fst release/include
+        cp build/_deps/gflags-build/libgflags* release/lib
+        cp build/_deps/glog-build/libglog* release/lib
+
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.os }}
+        path: release
