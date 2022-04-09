@@ -8,8 +8,8 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-            matrix:
-                os: [macos-latest, ubuntu-latest]
+      matrix:
+        os: [macos-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v3
@@ -21,16 +21,20 @@ jobs:
 
     - name: Prepare Release
       run: |
-        mkdir release
+        mkdir -p release/lib
+        if [ $RUNNER_OS == Linux ]; then
+          cp build/lib/libfst{,script}.so release/lib
+        else
+          cp build/lib/libfst{,script}.dylib release/lib
+        fi
         cp -r build/bin release
         cp -r build/include release
-        cp -r build/lib release
         cp -r build/_deps/gflags-build/include/gflags release/include
         cp -r build/_deps/glog-build/glog release/include
         cp build/_deps/glog-src/src/glog/log_severity.h release/include/glog
         cp -r build/include/fst release/include
-        cp build/_deps/gflags-build/libgflags* release/lib
-        cp build/_deps/glog-build/libglog* release/lib
+        cp build/_deps/gflags-build/libgflags*.a release/lib
+        cp build/_deps/glog-build/libglog*.a release/lib
 
     - name: Upload
       uses: actions/upload-artifact@v3
